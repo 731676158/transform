@@ -1,0 +1,102 @@
+#include <iostream>
+#include <string>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+
+#include <thread>
+#include <pcl/visualization/pcl_visualizer.h>
+
+using namespace std;
+using namespace pcl;
+//using namespace std::chrono_literals;
+
+int
+  main (int argc, char** argv)
+{
+/*******************************************读入所有点************************************************/
+/*  PointCloud<pcl::PointXYZ>::Ptr clouds_all (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/一组50个/aligned_12_gicp.pcd", *clouds_all);
+  PointCloud<pcl::PointXYZ>::Ptr clouds_next (new pcl::PointCloud<pcl::PointXYZ>);
+  PointCloud<pcl::PointXYZ> cloud;
+  string filename;
+  int j=1;
+  for(;j<21;j++)
+  {
+    filename="/home/jeff/桌面/david_gicp/aligned/"+to_string(j);
+    filename=filename+".pcd";
+    pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *clouds_next);
+    cloud=(*clouds_all)+(*clouds_next);
+    *clouds_all=cloud;
+  }
+*/
+  PointCloud<pcl::PointXYZ>::Ptr clouds_1 (new pcl::PointCloud<pcl::PointXYZ>);
+  PointCloud<pcl::PointXYZ>::Ptr clouds_2 (new pcl::PointCloud<pcl::PointXYZ>);
+//  把1拼到2上
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_12_1to2.pcd", *clouds_1);
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/test2_noise.pcd", *clouds_2);
+//  把2拼到1上
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_12_2to1.pcd", *clouds_1);
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/test1.pcd", *clouds_2);
+//  把1to2拼到3上
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_123_(1to2)to3.pcd", *clouds_1);
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/test3_noise.pcd", *clouds_2);
+//  把3拼到1to2上
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_123_3to(1to2).pcd", *clouds_1);
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/concatenated_12_1to2_gicp.pcd", *clouds_2);
+//  把1to2to3拼到4上
+  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_1234_(1to2to3)to4.pcd", *clouds_1);
+  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/test4_noise.pcd", *clouds_2);
+//把4拼到3上
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/test3_noise.pcd", *clouds_1);
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_34_4to3.pcd", *clouds_2);
+//  把4to3拼到1to2上
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/aligned_1234_1to2to4to3.pcd", *clouds_1);
+//  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/lidar1/pcds/save/new1/concatenated_34_4to3_gicp.pcd", *clouds_2);
+  PointCloud<pcl::PointXYZ>::Ptr clouds_all (new pcl::PointCloud<pcl::PointXYZ>);
+  PointCloud<pcl::PointXYZ> cloud;
+  cloud=(*clouds_1)+(*clouds_2);
+  *clouds_all=cloud;
+  
+
+  // Saving transformed input cloud.
+// 把1拼到2上
+//  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_12_1to2_gicp.pcd", *clouds_all);
+// 把2拼到1上
+//  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_12_2to1_gicp.pcd", *clouds_all);
+// 把1to2拼到3上
+//  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_123_1to2to3_gicp.pcd", *clouds_all);
+// 把3拼到1to2上
+//  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_123_3to_1to2_gicp.pcd", *clouds_all);
+// 把1to2to3拼到4上
+  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_1234_1to2to3to4_gicp.pcd", *clouds_all);
+//把4拼到3上
+//  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_34_4to3_gicp.pcd", *clouds_all);
+//  把4to3拼到1to2上
+//  pcl::io::savePCDFileASCII ("/home/jeff/lidar1/pcds/save/new1/concatenated_1234_1to2_to4to3_gicp.pcd", *clouds_all);
+
+/*******************visualization***************************/
+/*  // Initializing point cloud visualizer
+  pcl::visualization::PCLVisualizer::Ptr
+  viewer_final (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer_final->setBackgroundColor (0, 0, 0);
+
+  // Coloring and visualizing target cloud (green).
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ>
+  final_color (clouds_all, 0, 255, 0);
+  viewer_final->addPointCloud<pcl::PointXYZ> (clouds_all, final_color, "final cloud");
+  viewer_final->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
+                                                  1, "final cloud");
+  // Starting visualizer
+  viewer_final->addCoordinateSystem (1.0, "global");
+  viewer_final->initCameraParameters ();
+
+  // Wait until visualizer window is closed.
+  while (!viewer_final->wasStopped ())
+  {
+    viewer_final->spinOnce (100);
+    std::this_thread::sleep_for(100ms);
+  }
+*/
+
+  return (0);
+}

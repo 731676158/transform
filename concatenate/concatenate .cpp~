@@ -1,0 +1,60 @@
+#include <iostream>
+#include <string>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+
+#include <thread>
+#include <pcl/visualization/pcl_visualizer.h>
+
+using namespace std;
+using namespace pcl;
+using namespace std::chrono_literals;
+
+int
+  main (int argc, char** argv)
+{
+/*******************************************读入所有点************************************************/
+  PointCloud<pcl::PointXYZ>::Ptr clouds_all (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/jeff/桌面/david_gicp/aligned/0.pcd", *clouds_all);
+  PointCloud<pcl::PointXYZ>::Ptr clouds_next (new pcl::PointCloud<pcl::PointXYZ>);
+  PointCloud<pcl::PointXYZ> cloud;
+  string filename;
+  int j=1;
+  for(;j<21;j++)
+  {
+    filename="/home/jeff/桌面/david_gicp/aligned/"+to_string(j);
+    filename=filename+".pcd";
+    pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *clouds_next);
+    cloud=(*clouds_all)+(*clouds_next);
+    *clouds_all=cloud;
+  }
+
+  // Saving transformed input cloud.
+  pcl::io::savePCDFileASCII ("/home/jeff/桌面/david_gicp/aligned/final_pcd.pcd", *clouds_all);
+
+
+/*******************visualization***************************/
+  // Initializing point cloud visualizer
+  pcl::visualization::PCLVisualizer::Ptr
+  viewer_final (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer_final->setBackgroundColor (0, 0, 0);
+
+  // Coloring and visualizing target cloud (green).
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ>
+  final_color (clouds_all, 0, 255, 0);
+  viewer_final->addPointCloud<pcl::PointXYZ> (clouds_all, final_color, "final cloud");
+  viewer_final->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
+                                                  1, "final cloud");
+  // Starting visualizer
+  viewer_final->addCoordinateSystem (1.0, "global");
+  viewer_final->initCameraParameters ();
+
+  // Wait until visualizer window is closed.
+  while (!viewer_final->wasStopped ())
+  {
+    viewer_final->spinOnce (100);
+    std::this_thread::sleep_for(100ms);
+  }
+
+  return (0);
+}

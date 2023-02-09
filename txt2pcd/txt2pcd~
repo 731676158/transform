@@ -1,0 +1,56 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/io/ply_io.h>
+
+using namespace std;
+typedef structure TxtPoint
+{
+    double x;
+    double y;
+    double z;
+}POINT;
+
+int main(int argc, char** argv)
+{
+    int num_point;
+    FILE *fp_txt;
+    TxtPoint txtpoint;
+    vector<TxtPoint> pcdpoints;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PCDWriter writer;
+    
+    fp_txt.open("datafile.txt", 'r');
+    if (fp_txt)
+    {
+        while (fscanf(fp_txt, "%lf %lf %lf", &txtpoint.x, &txtpoint.y, &txtpoint.z) !=EOF)
+        {
+            pcdpoints.push_back(txtpoint);
+        }
+    }
+    else
+        cout<<"fail to load .txt file"<<endl;
+    
+    num_point=pcdpoints.size();
+    cloud->width=num_point;
+    cloud->height=1;
+    cloud->is_dense=false;
+    cloud->points.resize(cloud->width * cloud->height);
+    for (int i =0; i < cloud->points.size(); i++)
+    {
+        cloud->points[i].x=pcdpoints[i].x;
+        cloud->points[i].y=pcdpoints[i].y;
+        cloud->points[i].z=pcdpoints[i].z;
+    }
+    //output .pcd
+    writer.write("outputfile.pcd", *cloud);
+    //or use savePCDFile like the following code
+    pcl::io::savePCDFileASCII("outputfile.pcd", *cloud);
+    cout<<"finished"<<endl;
+   
+    return 0;
+}
+
